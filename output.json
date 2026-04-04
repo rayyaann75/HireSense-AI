@@ -1,0 +1,278 @@
+{
+  "id": "MhtNd8OfHo8w",
+  "name": "main",
+  "path": [
+    "/",
+    "\\components.json"
+  ],
+  "tech": null,
+  "edges": [],
+  "inComponent": null,
+  "childs": [
+    {
+      "id": "CJQWaeGJhvE9",
+      "name": "trae-project",
+      "path": [
+        "\\package.json"
+      ],
+      "tech": null,
+      "edges": [
+        {
+          "target": "J4Yfa7dTGczV",
+          "read": true,
+          "write": true
+        },
+        {
+          "target": "0W8YPlpM2Q4Z",
+          "read": true,
+          "write": true
+        }
+      ],
+      "inComponent": null,
+      "childs": [
+        {
+          "id": "J4Yfa7dTGczV",
+          "name": "Lucide Icons",
+          "path": [
+            "\\package.json"
+          ],
+          "tech": "lucideicons",
+          "edges": [],
+          "inComponent": null,
+          "childs": [],
+          "techs": [],
+          "languages": {},
+          "licenses": [],
+          "dependencies": [],
+          "reason": [
+            "lucideicons matched: /^lucide-react$/"
+          ]
+        },
+        {
+          "id": "0W8YPlpM2Q4Z",
+          "name": "Openai",
+          "path": [
+            "\\package.json"
+          ],
+          "tech": "openai",
+          "edges": [],
+          "inComponent": null,
+          "childs": [],
+          "techs": [],
+          "languages": {},
+          "licenses": [],
+          "dependencies": [],
+          "reason": [
+            "openai matched: /^openai$/"
+          ]
+        }
+      ],
+      "techs": [
+        "css",
+        "eslint",
+        "javascript",
+        "jsx",
+        "lucideicons",
+        "nextjs",
+        "nodejs",
+        "npm",
+        "openai",
+        "react",
+        "shadcn",
+        "tailwind",
+        "typescript"
+      ],
+      "languages": {
+        "JSON": 37,
+        "Unity3D Asset": 78,
+        "JavaScript": 71,
+        "TypeScript": 17,
+        "Markdown": 3,
+        "CSS": 1
+      },
+      "licenses": [],
+      "dependencies": [
+        [
+          "npm",
+          "@base-ui/react",
+          "^1.3.0"
+        ],
+        [
+          "npm",
+          "@radix-ui/react-avatar",
+          "^1.1.11"
+        ],
+        [
+          "npm",
+          "@radix-ui/react-scroll-area",
+          "^1.2.10"
+        ],
+        [
+          "npm",
+          "@tailwindcss/typography",
+          "^0.5.19"
+        ],
+        [
+          "npm",
+          "axios",
+          "^1.14.0"
+        ],
+        [
+          "npm",
+          "cheerio",
+          "^1.2.0"
+        ],
+        [
+          "npm",
+          "class-variance-authority",
+          "^0.7.1"
+        ],
+        [
+          "npm",
+          "clsx",
+          "^2.1.1"
+        ],
+        [
+          "npm",
+          "framer-motion",
+          "^12.38.0"
+        ],
+        [
+          "npm",
+          "lucide-react",
+          "^0.471.0"
+        ],
+        [
+          "npm",
+          "mammoth",
+          "^1.12.0"
+        ],
+        [
+          "npm",
+          "next",
+          "16.2.2"
+        ],
+        [
+          "npm",
+          "openai",
+          "^6.33.0"
+        ],
+        [
+          "npm",
+          "pdf-parse",
+          "^2.4.5"
+        ],
+        [
+          "npm",
+          "react",
+          "19.2.4"
+        ],
+        [
+          "npm",
+          "react-dom",
+          "19.2.4"
+        ],
+        [
+          "npm",
+          "react-markdown",
+          "^10.1.0"
+        ],
+        [
+          "npm",
+          "remark-gfm",
+          "^4.0.1"
+        ],
+        [
+          "npm",
+          "shadcn",
+          "^4.1.2"
+        ],
+        [
+          "npm",
+          "tailwind-merge",
+          "^3.5.0"
+        ],
+        [
+          "npm",
+          "tesseract.js",
+          "^7.0.0"
+        ],
+        [
+          "npm",
+          "tw-animate-css",
+          "^1.4.0"
+        ],
+        [
+          "npm",
+          "@tailwindcss/postcss",
+          "^4"
+        ],
+        [
+          "npm",
+          "@types/node",
+          "^20"
+        ],
+        [
+          "npm",
+          "@types/pdf-parse",
+          "^1.1.5"
+        ],
+        [
+          "npm",
+          "@types/react",
+          "^19"
+        ],
+        [
+          "npm",
+          "@types/react-dom",
+          "^19"
+        ],
+        [
+          "npm",
+          "eslint",
+          "^9"
+        ],
+        [
+          "npm",
+          "eslint-config-next",
+          "16.2.2"
+        ],
+        [
+          "npm",
+          "tailwindcss",
+          "^4"
+        ],
+        [
+          "npm",
+          "typescript",
+          "^5"
+        ]
+      ],
+      "reason": [
+        "lucideicons matched: /^lucide-react$/",
+        "nextjs matched: /^next$/",
+        "openai matched: /^openai$/",
+        "react matched: /^react$/",
+        "shadcn matched: /^shadcn$/",
+        "eslint matched: /^eslint$/",
+        "tailwind matched: /^tailwindcss$/",
+        "typescript matched: /^typescript$/",
+        "matched file: tsconfig.json",
+        "matched file: eslint.config.mjs",
+        "matched file: package-lock.json",
+        "matched file: package.json",
+        "matched extension: .js",
+        "matched extension: .ts",
+        "matched extension: .css",
+        "matched extension: .tsx"
+      ]
+    }
+  ],
+  "techs": [
+    "shadcn"
+  ],
+  "languages": {},
+  "licenses": [],
+  "dependencies": [],
+  "reason": []
+}
