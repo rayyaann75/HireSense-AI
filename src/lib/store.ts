@@ -95,6 +95,7 @@ export const useHireSenseStore = create<HireSenseState>((set) => ({
     messages: [],
     input: "",
     isSending: false,
+    quickMessage: "",
     candidateEmail: null,
     sentMessages: []
   }),

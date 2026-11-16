@@ -35,7 +35,7 @@ export const getAIClient = (): AIClientConfig | null => {
           "X-Title": "HireSense AI",
         }
       }),
-      model: "google/gemini-2.0-flash-001"
+      model: "nvidia/nemotron-3.5-super-vl:free"
     };
   }
 

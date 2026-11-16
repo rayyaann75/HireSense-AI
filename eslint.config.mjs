@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone CommonJS diagnostic script, not part of the app bundle:
+    "test-api-key.js",
   ]),
 ]);
 

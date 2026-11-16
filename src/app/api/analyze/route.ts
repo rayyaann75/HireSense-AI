@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import mammoth from "mammoth";
 import { getAIClient } from "@/lib/ai";
-import { setupPdfPolyfills } from "@/lib/polyfills";
+// Import the pdf-parse worker before the library so it can locate its worker
+// files when bundled by Turbopack / deployed to a serverless environment.
+import "pdf-parse/worker";
+import { PDFParse } from "pdf-parse";
 
 export const runtime = 'nodejs';
 
@@ -9,15 +12,6 @@ const aiConfig = getAIClient();
 
 export async function POST(req: NextRequest) {
   try {
-    setupPdfPolyfills();
-
-    let pdf;
-    try {
-      pdf = require("pdf-parse");
-    } catch (e: any) {
-      console.warn("pdf-parse not loaded, will rely on vision for PDFs if needed");
-    }
-
     const formData = await req.formData();
     const file = formData.get("file") as File;
 
@@ -69,31 +63,28 @@ export async function POST(req: NextRequest) {
       });
       text = response.choices[0].message.content || "";
     }
-    // 3. Handle PDF (Text-based first, then Vision for scanned)
+    // 3. Handle PDF (text extraction via pdf-parse v2)
     else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
       console.log("Parsing PDF...");
+      let parser: PDFParse | null = null;
       try {
-        if (pdf) {
-          const data = await pdf(buffer);
-          text = data.text;
-        }
-        
-        // If PDF is scanned (little to no text), use Vision
+        parser = new PDFParse({ data: buffer });
+        const pdfData = await parser.getText();
+        text = pdfData.text;
+
+        // A scanned PDF contains little to no selectable text.
         if (!text || text.trim().length < 100) {
-          console.log("Scanned PDF detected, using AI Vision...");
-          if (!aiConfig) throw new Error("AI Configuration missing for Vision analysis");
-          
-          // Note: Standard Vision models take the first page of a PDF as an image in many implementations
-          // For simplicity, we'll treat it as a blob if the provider supports it, or ask user for image
-          // Actually, for "Elite" speed, we'll suggest uploading images for scanned docs, 
-          // but we can try to pass the buffer if supported.
-          // Most providers (OpenRouter/OpenAI) don't take PDF buffers in vision directly yet.
-          // We will stick to text-based PDF for now and Image-based Vision.
-          if (!text) text = "This PDF appears to be a scanned image. For best results, please upload a high-quality image file or a text-based PDF.";
+          console.log("Scanned or empty PDF detected");
+          text = "This PDF appears to be a scanned image with little selectable text. For best results, please upload a high-quality image (PNG/JPG) or a text-based PDF.";
         }
-      } catch (pdfError: any) {
-        console.error("PDF Parse Error:", pdfError.message);
+      } catch (pdfError: unknown) {
+        const message = pdfError instanceof Error ? pdfError.message : String(pdfError);
+        console.error("PDF Parse Error:", message);
         text = "Failed to parse PDF text. If this is a scanned document, please upload it as an image (PNG/JPG).";
+      } finally {
+        if (parser) {
+          await parser.destroy().catch(() => {});
+        }
       }
     } 
     // 4. Handle Text/Everything else

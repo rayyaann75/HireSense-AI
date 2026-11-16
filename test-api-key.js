@@ -1,6 +1,7 @@
 
+// Standalone diagnostic. Run with a Node version that supports --env-file:
+//   node --env-file=.env.local test-api-key.js
 const { OpenAI } = require('openai');
-require('dotenv').config({ path: '.env.local' });
 
 async function verifyKey() {
   const providers = [
@@ -17,10 +18,10 @@ async function verifyKey() {
       model: "gpt-4o"
     },
     {
-      name: 'OpenRouter (Gemini)',
+      name: 'OpenRouter',
       apiKey: process.env.OPENROUTER_API_KEY,
       baseURL: "https://openrouter.ai/api/v1",
-      model: "google/gemini-2.0-flash-001"
+      model: "nvidia/nemotron-3.5-super-vl:free"
     }
   ];
 

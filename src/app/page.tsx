@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from 'react-markdown';
@@ -15,16 +15,11 @@ import {
   Send, 
   Bot, 
   User, 
-  GithubIcon, 
-  Linkedin, 
   Mail, 
-  Phone, 
-  MessageSquare, 
   ArrowRight, 
   FileText,
   Volume2,
   VolumeX,
-  Type,
   ExternalLink
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -54,6 +49,28 @@ const containerVariants = {
   }
 };
 
+// Normalizes an unknown thrown value (axios error, Error, etc.) into a readable string.
+const extractErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as { details?: string; error?: string } | undefined;
+    return data?.details || data?.error || error.message;
+  }
+  return error instanceof Error ? error.message : String(error);
+};
+
+// Loading skeleton for chat messages (kept at module scope so its state is not
+// recreated on every render).
+const MessageSkeleton = () => (
+  <div className="flex gap-4 mb-8">
+    <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+    <div className="space-y-2 flex-1">
+      <Skeleton className="h-4 w-[200px]" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-[80%]" />
+    </div>
+  </div>
+);
+
 export default function Home() {
   const {
     portfolioUrl,
@@ -66,7 +83,6 @@ export default function Home() {
     isVoiceEnabled,
     quickMessage,
     candidateEmail,
-    sentMessages,
     setFile,
     setPortfolioUrl,
     setResumeText,
@@ -82,7 +98,7 @@ export default function Home() {
     reset
   } = useHireSenseStore();
 
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -168,9 +184,9 @@ export default function Home() {
           content: "Hello! I've analyzed the document. I'm ready to answer any questions you have about the candidate's experience, skills, or projects. What would you like to know first?",
         },
       ]);
-    } catch (error: any) {
-      console.error("Upload failed detailed error:", error.response?.data || error.message);
-      const errorMsg = error.response?.data?.details || error.message;
+    } catch (error: unknown) {
+      console.error("Upload failed detailed error:", error);
+      const errorMsg = extractErrorMessage(error);
       alert(`Upload failed: ${errorMsg}. This might be due to a network connection issue or file size.`);
     } finally {
       setIsAnalyzing(false);
@@ -193,8 +209,8 @@ export default function Home() {
           content: `Hello! I've analyzed the portfolio at ${portfolioUrl}. I'm ready to answer any questions you have about the candidate's experience, skills, or projects. What would you like to know first?`,
         },
       ]);
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.details || error.message;
+    } catch (error: unknown) {
+      const errorMsg = extractErrorMessage(error);
       alert(`URL Analysis failed: ${errorMsg}.`);
     } finally {
       setIsAnalyzing(false);
@@ -210,7 +226,7 @@ export default function Home() {
     // Helper to strip markdown code block markers from JSON
     const stripJsonMarkdown = (str: string) => str.replace(/```[a-z]*\n?|```/g, '').trim();
 
-    const projectsMatch = text.match(/<projects>(.*?)<\/projects>/s);
+    const projectsMatch = text.match(/<projects>([\s\S]*?)<\/projects>/);
     if (projectsMatch) {
       try {
         const jsonContent = stripJsonMarkdown(projectsMatch[1]);
@@ -219,7 +235,7 @@ export default function Home() {
       } catch (e) { console.error("Projects parse failed", e); }
     }
 
-    const contactMatch = text.match(/<contact>(.*?)<\/contact>/s);
+    const contactMatch = text.match(/<contact>([\s\S]*?)<\/contact>/);
     if (contactMatch) {
       try {
         const jsonContent = stripJsonMarkdown(contactMatch[1]);
@@ -254,8 +270,8 @@ export default function Home() {
       const parsedMessage = parseResponse(res.data.content);
       setMessages((prev) => [...prev, parsedMessage]);
       if (isVoiceEnabled) speak(parsedMessage.content);
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.details || error.message;
+    } catch (error: unknown) {
+      const errorMsg = extractErrorMessage(error);
       alert(`Chat failed: ${errorMsg}`);
     } finally {
       setIsSending(false);
@@ -272,24 +288,11 @@ export default function Home() {
     alert(`Draft created for: ${candidateEmail}`);
   };
 
+  // Keep the conversation pinned to the bottom as messages arrive and while
+  // the assistant is generating a response (like ChatGPT).
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isSending]);
-
-  // Loading Skeleton for Chat Messages
-  const MessageSkeleton = () => (
-    <div className="flex gap-4 mb-8">
-      <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
-      <div className="space-y-2 flex-1">
-        <Skeleton className="h-4 w-[200px]" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-[80%]" />
-      </div>
-    </div>
-  );
 
   if (!resumeText) {
     return (
@@ -374,7 +377,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#020203] text-white relative overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#020203] text-white relative overflow-hidden">
       <header className="h-20 glass border-b border-white/5 flex items-center justify-between px-10 sticky top-0 z-50 backdrop-blur-3xl shadow-2xl">
         <div className="flex items-center gap-5">
           <motion.div whileHover={{ scale: 1.05 }} className="h-12 w-12 bg-white rounded-2xl flex items-center justify-center text-black shadow-2xl">
@@ -396,8 +399,8 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full">
-        <ScrollArea className="flex-1 px-10 py-10" ref={scrollAreaRef}>
+      <main className="flex-1 flex min-h-0 overflow-hidden max-w-[1600px] mx-auto w-full">
+        <ScrollArea className="flex-1 px-10 py-10">
           <div className="max-w-4xl mx-auto space-y-12">
             <AnimatePresence mode="popLayout">
               {messages.map((m, idx) => (
@@ -493,6 +496,7 @@ export default function Home() {
                 </motion.div>
               )}
             </AnimatePresence>
+            <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
       </main>

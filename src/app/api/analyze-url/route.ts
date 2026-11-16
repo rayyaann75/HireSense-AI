@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-import * as cheerio from "cheerio";
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,7 +29,7 @@ export async function POST(req: NextRequest) {
       timeout: 15000 // 15s timeout
     });
 
-    let text = response.data;
+    const text = response.data;
 
     if (!text || text.length < 50) {
       throw new Error("Could not extract meaningful content from this URL");
