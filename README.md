@@ -4,6 +4,8 @@ An AI-powered **Resume & Portfolio Agent**. Upload a resume (PDF, DOCX, or image
 
 Instead of scanning a resume yourself, you ask it things like *"What is this person's strongest skill?"* or *"Show me their projects"* and get a clean, conversational, formatted answer.
 
+🔗 **Live Demo:** [hire-sense-ai-ruddy-nine.vercel.app](https://hire-sense-ai-ruddy-nine.vercel.app/)
+
 ---
 
 ## What It Does
@@ -87,6 +89,8 @@ OPENROUTER_API_KEY=your_key_here
 npm run dev
 ```
 Open **http://localhost:3000** in your browser.
+
+> Running locally spins up the app on `http://localhost:3000`. The already-deployed **live version** is at **https://hire-sense-ai-ruddy-nine.vercel.app/**.
 
 ### 5. Build for production
 ```bash
